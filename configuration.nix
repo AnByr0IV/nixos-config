@@ -130,7 +130,7 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "26.05"; # Did you read the comment?
+  system.stateVersion = "26.05"; #
 
 
   nova.profile = "shared";
@@ -155,6 +155,8 @@
       zoom-us
       discord
       spotify
+
+      gnomeExtensions.dash-to-dock
     ];
   dconf.settings = {
     "org/gnome/desktop/background" = {
@@ -166,10 +168,19 @@
     "org/gnome/shell" = {
       enabled-extensions = [
         "hidetopbar@mathieu.bidon.ca"
+        "dash-to-dock@micxgx.gmail.com" 
       ];
     };
     "org/gnome/shell/extensions/hidetopbar" = {
       enable-intellihide = true;
+    };
+    "org/gnome/shell/extensions/dash-to-dock" = {
+      dock-position = lib.mkForce "RIGHT";
+      dock-fixed = lib.mkForce false;
+      autohide = lib.mkForce true;
+      intellihide = lib.mkForce true;
+      extend-height = false;
+      show-trash = false;
     };
   };
 };
