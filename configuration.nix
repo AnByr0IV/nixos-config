@@ -99,11 +99,37 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-  	gnomeExtensions.hide-top-bar
+ environment.systemPackages = with pkgs; [
+    gnomeExtensions.hide-top-bar
+
+    kitty
+    rofi
+    waybar
+    hyprpaper
+    hyprlock
+    hypridle
+    wl-clipboard
+    grim
+    slurp
+    brightnessctl
+    networkmanagerapplet
+    pavucontrol
   ];
+
+  # Hyprland
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+    xwayland.enable = true;
+  };
+  # Wayland support
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+    ];
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -158,31 +184,63 @@
 
       gnomeExtensions.dash-to-dock
     ];
-  dconf.settings = {
-    "org/gnome/desktop/background" = {
-      picture-uri = lib.mkForce "file:///home/nova/Pictures/backgrounds/rocket_background.png";
-      picture-uri-dark = lib.mkForce "file:///home/nova/Pictures/backgrounds/rocket_background.png";
-      picture-options = "zoom";
-    };
     
-    "org/gnome/shell" = {
-      enabled-extensions = [
-        "hidetopbar@mathieu.bidon.ca"
-        "dash-to-dock@micxgx.gmail.com" 
-      ];
+    dconf.settings = {
+      "org/gnome/desktop/background" = {
+        picture-uri = lib.mkForce "file:///home/nova/Pictures/backgrounds/rocket_background.png";
+        picture-uri-dark = lib.mkForce "file:///home/nova/Pictures/backgrounds/rocket_background.png";
+        picture-options = "zoom";
+      };
+    
+      "org/gnome/shell" = {
+        enabled-extensions = [
+          "hidetopbar@mathieu.bidon.ca"
+          "dash-to-dock@micxgx.gmail.com" 
+        ];
+      };
+
+      "org/gnome/shell/extensions/hidetopbar" = {
+        enable-intellihide = true;
+      };
+
+      "org/gnome/shell/extensions/dash-to-dock" = {
+        dock-position = lib.mkForce "RIGHT";
+        dock-fixed = lib.mkForce false;
+        autohide = lib.mkForce true;
+        intellihide = lib.mkForce true;
+        extend-height = false;
+        show-trash = false;
+      };
     };
-    "org/gnome/shell/extensions/hidetopbar" = {
-      enable-intellihide = true;
-    };
-    "org/gnome/shell/extensions/dash-to-dock" = {
-      dock-position = lib.mkForce "RIGHT";
-      dock-fixed = lib.mkForce false;
-      autohide = lib.mkForce true;
-      intellihide = lib.mkForce true;
-      extend-height = false;
-      show-trash = false;
+    # Hyprland configuration
+    wayland.windowManager.hyprland = {
+      enable = true;
+
+      # Required when using UWSM
+      systemd.enable = false;
+
+      settings = {
+        "$mod" = "SUPER";
+
+        bind = [
+          "$mod, RETURN, exec, kitty"
+          "$mod, Q, killactive"
+          "$mod, M, exit"
+          "$mod, D, exec, rofi -show drun"
+        ];
+
+        general = {
+          gaps_in = 5;
+          gaps_out = 10;
+          border_size = 2;
+          layout = "dwindle";
+        };
+
+        decoration = {
+          rounding = 10;
+        };
+      };
     };
   };
-};
 }
 
